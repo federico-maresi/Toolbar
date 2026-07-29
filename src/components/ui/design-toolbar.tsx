@@ -196,7 +196,7 @@ export function DesignToolbar() {
             aria-label={selectedPointerTool}
             aria-pressed={toggles.select}
             onClick={() => toggleExclusive("select")}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
               toggles.select
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
@@ -265,7 +265,7 @@ export function DesignToolbar() {
             aria-label="Shape"
             aria-pressed={toggles.shape}
             onClick={() => toggleExclusive("shape")}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
               toggles.shape
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"

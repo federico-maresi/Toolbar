@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   Bold,
   Italic,
+  Heading,
   Heading2,
+  Heading3,
   List,
   ListOrdered,
   Code,
@@ -27,19 +29,34 @@ interface ToggleButtonProps {
 
 function ToggleButton({ icon: Icon, label, pressed, onToggle }: ToggleButtonProps) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      aria-pressed={pressed}
-      onClick={onToggle}
-      className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-        pressed
-          ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
-          : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-      }`}
+    <div className="group relative">
+      <button
+        type="button"
+        aria-label={label}
+        aria-pressed={pressed}
+        onClick={onToggle}
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+          pressed
+            ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+        }`}
+      >
+        <Icon className="h-4 w-4" strokeWidth={2} />
+      </button>
+      <Tooltip label={label} />
+    </div>
+  );
+}
+
+function Tooltip({ label }: { label: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 dark:border dark:border-neutral-700 dark:bg-neutral-800"
     >
-      <Icon className="h-4 w-4" strokeWidth={2} />
-    </button>
+      {label}
+      <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-neutral-900 dark:border-t-neutral-800" />
+    </span>
   );
 }
 
@@ -86,7 +103,20 @@ const MENU_SECTIONS: MenuSection[] = [
   },
 ];
 
+interface HeadingLevel {
+  label: string;
+  icon: LucideIcon;
+}
+
+const HEADING_LEVELS: HeadingLevel[] = [
+  { label: "Heading 2", icon: Heading2 },
+  { label: "Heading 3", icon: Heading3 },
+];
+
 type ToggleKey = "bold" | "italic" | "heading" | "bulletList" | "numberedList" | "code";
+type ExclusiveKey = "heading" | "bulletList" | "numberedList" | "code";
+
+const EXCLUSIVE_KEYS: ExclusiveKey[] = ["heading", "bulletList", "numberedList", "code"];
 
 export default function EditorToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
@@ -98,10 +128,32 @@ export default function EditorToolbar() {
     code: false,
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headingMenuOpen, setHeadingMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function toggle(key: ToggleKey) {
+  function toggle(key: "bold" | "italic") {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function activateExclusive(key: ExclusiveKey) {
+    setToggles((prev) => {
+      const next = { ...prev };
+      for (const exclusiveKey of EXCLUSIVE_KEYS) {
+        next[exclusiveKey] = exclusiveKey === key;
+      }
+      return next;
+    });
+  }
+
+  function toggleExclusive(key: ExclusiveKey) {
+    setToggles((prev) => {
+      if (prev[key]) return { ...prev, [key]: false };
+      const next = { ...prev };
+      for (const exclusiveKey of EXCLUSIVE_KEYS) {
+        next[exclusiveKey] = exclusiveKey === key;
+      }
+      return next;
+    });
   }
 
   function handleSelect(label: string) {
@@ -109,17 +161,27 @@ export default function EditorToolbar() {
     setMenuOpen(false);
   }
 
+  function handleHeadingSelect(label: string) {
+    console.log(`Format: ${label}`);
+    activateExclusive("heading");
+    setHeadingMenuOpen(false);
+  }
+
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen && !headingMenuOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
+        setHeadingMenuOpen(false);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setHeadingMenuOpen(false);
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
@@ -128,22 +190,72 @@ export default function EditorToolbar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuOpen]);
+  }, [menuOpen, headingMenuOpen]);
 
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
         <ToggleButton icon={Bold} label="Bold" pressed={toggles.bold} onToggle={() => toggle("bold")} />
         <ToggleButton icon={Italic} label="Italic" pressed={toggles.italic} onToggle={() => toggle("italic")} />
-        <ToggleButton icon={Heading2} label="Heading" pressed={toggles.heading} onToggle={() => toggle("heading")} />
-        <ToggleButton icon={List} label="Bullet list" pressed={toggles.bulletList} onToggle={() => toggle("bulletList")} />
+
+        <div className="group relative">
+          <button
+            type="button"
+            aria-label="Heading"
+            aria-haspopup="menu"
+            aria-expanded={headingMenuOpen}
+            aria-pressed={toggles.heading}
+            onClick={() => {
+              setMenuOpen(false);
+              setHeadingMenuOpen((open) => !open);
+            }}
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+              toggles.heading || headingMenuOpen
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+            }`}
+          >
+            <Heading className="h-4 w-4" strokeWidth={2} />
+          </button>
+          {!headingMenuOpen && <Tooltip label="Heading" />}
+
+          {headingMenuOpen && (
+            <div
+              role="menu"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-40 -translate-x-1/2 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              {HEADING_LEVELS.map((level) => {
+                const Icon = level.icon;
+                return (
+                  <button
+                    key={level.label}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => handleHeadingSelect(level.label)}
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  >
+                    <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
+                    <span className="text-sm font-medium text-neutral-900 dark:text-white">{level.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <ToggleButton
+          icon={List}
+          label="Bullet list"
+          pressed={toggles.bulletList}
+          onToggle={() => toggleExclusive("bulletList")}
+        />
         <ToggleButton
           icon={ListOrdered}
           label="Numbered list"
           pressed={toggles.numberedList}
-          onToggle={() => toggle("numberedList")}
+          onToggle={() => toggleExclusive("numberedList")}
         />
-        <ToggleButton icon={Code} label="Code" pressed={toggles.code} onToggle={() => toggle("code")} />
+        <ToggleButton icon={Code} label="Code" pressed={toggles.code} onToggle={() => toggleExclusive("code")} />
 
         <div className="mx-1 h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
@@ -151,7 +263,10 @@ export default function EditorToolbar() {
           type="button"
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={() => {
+            setHeadingMenuOpen(false);
+            setMenuOpen((open) => !open);
+          }}
           className="flex h-8 items-center gap-1 rounded-full bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
         >
           Add

@@ -221,9 +221,7 @@ export function DesignToolbar() {
               setSelectMenuOpen((open) => !open);
             }}
             className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
-              selectMenuOpen
-                ? "text-neutral-900 dark:text-white"
-                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+              selectMenuOpen ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
             <ChevronDown
@@ -296,9 +294,7 @@ export function DesignToolbar() {
               setShapeMenuOpen((open) => !open);
             }}
             className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
-              shapeMenuOpen
-                ? "text-neutral-900 dark:text-white"
-                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+              shapeMenuOpen ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
             <ChevronDown

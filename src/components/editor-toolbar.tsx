@@ -7,6 +7,14 @@ import {
   ListOrdered,
   Code,
   ChevronDown,
+  FileText,
+  CircleCheck,
+  Info,
+  TriangleAlert,
+  Columns2,
+  Target,
+  Box,
+  LayoutGrid,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,6 +43,49 @@ function ToggleButton({ icon: Icon, label, pressed, onToggle }: ToggleButtonProp
   );
 }
 
+interface MenuItem {
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
+const MENU_SECTIONS: MenuSection[] = [
+  {
+    title: "STRUCTURE & PATH",
+    items: [
+      { label: "Free text", description: "Formattable text paragraph", icon: FileText },
+      { label: "Steps", description: "Numbered steps", icon: ListOrdered },
+      { label: "Do / Don'ts", description: "When to / when not to", icon: CircleCheck },
+    ],
+  },
+  {
+    title: "EMPHASIS",
+    items: [
+      { label: "Callout", description: "Highlighted note", icon: Info },
+      { label: "Warn", description: "Warnings", icon: TriangleAlert },
+    ],
+  },
+  {
+    title: "COMPARISON & CHOICE",
+    items: [
+      { label: "Comparison", description: "N-option comparison table", icon: Columns2 },
+      { label: "Scenarios", description: "Use case scenarios", icon: Target },
+    ],
+  },
+  {
+    title: "PRODUCT & FEATURE",
+    items: [
+      { label: "Product Card", description: "Product/tool card", icon: Box },
+      { label: "Feature Grid", description: "Feature grid", icon: LayoutGrid },
+    ],
+  },
+];
+
 type ToggleKey = "bold" | "italic" | "heading" | "bulletList" | "numberedList" | "code";
 
 export default function EditorToolbar() {
@@ -51,6 +102,11 @@ export default function EditorToolbar() {
 
   function toggle(key: ToggleKey) {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function handleSelect(label: string) {
+    console.log(`Insert: ${label}`);
+    setMenuOpen(false);
   }
 
   useEffect(() => {
@@ -106,9 +162,36 @@ export default function EditorToolbar() {
       {menuOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] z-10 w-72 rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="absolute right-0 top-[calc(100%+8px)] z-10 max-h-[420px] w-72 overflow-y-auto rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <div className="px-2 py-1 text-xs text-neutral-400">Menu placeholder — Task 3 replaces this</div>
+          {MENU_SECTIONS.map((section, index) => (
+            <div
+              key={section.title}
+              className={index > 0 ? "mt-1 border-t border-neutral-100 pt-1 dark:border-neutral-800" : ""}
+            >
+              <div className="px-2 pb-1 pt-2 text-[11px] font-semibold tracking-wide text-neutral-400 dark:text-neutral-500">
+                {section.title}
+              </div>
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => handleSelect(item.label)}
+                    className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  >
+                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
+                    <span>
+                      <span className="block text-sm font-medium text-neutral-900 dark:text-white">{item.label}</span>
+                      <span className="block text-xs text-neutral-500 dark:text-neutral-400">{item.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
       )}
     </div>

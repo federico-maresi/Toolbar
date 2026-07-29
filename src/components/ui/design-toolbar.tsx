@@ -243,7 +243,7 @@ export function DesignToolbar() {
           className={`flex h-8 items-center gap-1 rounded-full border pl-3 pr-2 text-sm font-medium text-white transition-colors dark:text-neutral-900 ${
             moreMenuOpen
               ? "border-transparent bg-neutral-900 dark:bg-white"
-              : "bg-gradient-to-b from-neutral-800 to-neutral-900 hover:from-neutral-700 hover:to-neutral-800 border-t-black/90 border-x-black/55 border-b-black/55 dark:from-white dark:to-neutral-50 dark:hover:from-neutral-50 dark:hover:to-neutral-100 dark:border-t-white/90 dark:border-x-white/55 dark:border-b-white/55"
+              : "bg-neutral-900 bg-gradient-to-b from-neutral-800 to-neutral-900 hover:from-neutral-700 hover:to-neutral-800 border-t-black/90 border-x-black/55 border-b-black/55 dark:bg-white dark:from-white dark:to-neutral-50 dark:hover:from-neutral-50 dark:hover:to-neutral-100 dark:border-t-white/90 dark:border-x-white/55 dark:border-b-white/55"
           }`}
         >
           More

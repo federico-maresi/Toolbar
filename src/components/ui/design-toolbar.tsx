@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Lock,
   Magnet,
+  Frame,
   Shapes,
   Square,
   Circle,
+  Triangle,
+  Hexagon,
   PenTool,
   Type,
   MessageSquare,
   ChevronDown,
-  Hexagon,
-  AlignLeft,
-  Image,
-  Component,
-  MousePointerClick,
-  LayoutTemplate,
+  Images,
+  Video,
+  Boxes,
+  Puzzle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -58,47 +58,16 @@ function Tooltip({ label }: { label: string }) {
   );
 }
 
-interface MenuItem {
+interface MoreItem {
   label: string;
-  description: string;
   icon: LucideIcon;
 }
 
-interface MenuSection {
-  title: string;
-  items: MenuItem[];
-}
-
-const MENU_SECTIONS: MenuSection[] = [
-  {
-    title: "SHAPES",
-    items: [
-      { label: "Rectangle", description: "Basic rectangle shape", icon: Square },
-      { label: "Ellipse", description: "Basic ellipse shape", icon: Circle },
-      { label: "Polygon", description: "Multi-sided polygon", icon: Hexagon },
-    ],
-  },
-  {
-    title: "TEXT",
-    items: [
-      { label: "Heading", description: "Large heading text", icon: Type },
-      { label: "Body text", description: "Paragraph body text", icon: AlignLeft },
-    ],
-  },
-  {
-    title: "MEDIA",
-    items: [
-      { label: "Image", description: "Image placeholder", icon: Image },
-      { label: "Icon", description: "Icon from library", icon: Component },
-    ],
-  },
-  {
-    title: "COMPONENTS",
-    items: [
-      { label: "Button", description: "Interactive button component", icon: MousePointerClick },
-      { label: "Card", description: "Card container component", icon: LayoutTemplate },
-    ],
-  },
+const MORE_ITEMS: MoreItem[] = [
+  { label: "Images", icon: Images },
+  { label: "Video", icon: Video },
+  { label: "Assets", icon: Boxes },
+  { label: "Plugin", icon: Puzzle },
 ];
 
 interface ShapeVariant {
@@ -109,27 +78,29 @@ interface ShapeVariant {
 const SHAPE_VARIANTS: ShapeVariant[] = [
   { label: "Rectangle", icon: Square },
   { label: "Ellipse", icon: Circle },
+  { label: "Triangle", icon: Triangle },
+  { label: "Polygon", icon: Hexagon },
 ];
 
-type ToggleKey = "lockRatio" | "snapToGrid" | "shape" | "pen" | "text" | "comment";
-type ExclusiveKey = "shape" | "pen" | "text" | "comment";
+type ToggleKey = "snapToGrid" | "frame" | "shape" | "pen" | "text" | "comment";
+type ExclusiveKey = "frame" | "shape" | "pen" | "text" | "comment";
 
-const EXCLUSIVE_KEYS: ExclusiveKey[] = ["shape", "pen", "text", "comment"];
+const EXCLUSIVE_KEYS: ExclusiveKey[] = ["frame", "shape", "pen", "text", "comment"];
 
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    lockRatio: false,
     snapToGrid: false,
+    frame: false,
     shape: false,
     pen: false,
     text: false,
     comment: false,
   });
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function toggle(key: "lockRatio" | "snapToGrid") {
+  function toggle(key: "snapToGrid") {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
@@ -156,7 +127,7 @@ export function DesignToolbar() {
 
   function handleSelect(label: string) {
     console.log(`Insert: ${label}`);
-    setMenuOpen(false);
+    setMoreMenuOpen(false);
   }
 
   function handleShapeSelect(label: string) {
@@ -166,18 +137,18 @@ export function DesignToolbar() {
   }
 
   useEffect(() => {
-    if (!menuOpen && !shapeMenuOpen) return;
+    if (!moreMenuOpen && !shapeMenuOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
+        setMoreMenuOpen(false);
         setShapeMenuOpen(false);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setMenuOpen(false);
+        setMoreMenuOpen(false);
         setShapeMenuOpen(false);
       }
     }
@@ -188,13 +159,18 @@ export function DesignToolbar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuOpen, shapeMenuOpen]);
+  }, [moreMenuOpen, shapeMenuOpen]);
 
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <ToggleButton icon={Lock} label="Lock ratio" pressed={toggles.lockRatio} onToggle={() => toggle("lockRatio")} />
-        <ToggleButton icon={Magnet} label="Snap to grid" pressed={toggles.snapToGrid} onToggle={() => toggle("snapToGrid")} />
+        <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
+        <ToggleButton
+          icon={Magnet}
+          label="Snap to grid"
+          pressed={toggles.snapToGrid}
+          onToggle={() => toggle("snapToGrid")}
+        />
 
         <div className="group relative">
           <button
@@ -204,16 +180,21 @@ export function DesignToolbar() {
             aria-expanded={shapeMenuOpen}
             aria-pressed={toggles.shape}
             onClick={() => {
-              setMenuOpen(false);
+              setMoreMenuOpen(false);
               setShapeMenuOpen((open) => !open);
             }}
-            className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+            className={`flex h-8 items-center gap-1 rounded-full pl-2.5 pr-2 text-sm font-medium transition-colors ${
               toggles.shape || shapeMenuOpen
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
             <Shapes className="h-4 w-4" strokeWidth={2} />
+            Shape
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
+              strokeWidth={2}
+            />
           </button>
           {!shapeMenuOpen && <Tooltip label="Shape" />}
 
@@ -255,51 +236,38 @@ export function DesignToolbar() {
         <button
           type="button"
           aria-haspopup="menu"
-          aria-expanded={menuOpen}
+          aria-expanded={moreMenuOpen}
           onClick={() => {
             setShapeMenuOpen(false);
-            setMenuOpen((open) => !open);
+            setMoreMenuOpen((open) => !open);
           }}
           className="flex h-8 items-center gap-1 rounded-full bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
         >
-          Add
-          <ChevronDown className={`h-4 w-4 transition-transform ${menuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
+          More
+          <ChevronDown className={`h-4 w-4 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
         </button>
       </div>
 
-      {menuOpen && (
+      {moreMenuOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] z-10 max-h-[420px] w-72 overflow-y-auto rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-48 rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
-          {MENU_SECTIONS.map((section, index) => (
-            <div
-              key={section.title}
-              className={index > 0 ? "mt-1 border-t border-neutral-100 pt-1 dark:border-neutral-800" : ""}
-            >
-              <div className="px-2 pb-1 pt-2 text-[11px] font-semibold tracking-wide text-neutral-400 dark:text-neutral-500">
-                {section.title}
-              </div>
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => handleSelect(item.label)}
-                    className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                  >
-                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
-                    <span>
-                      <span className="block text-sm font-medium text-neutral-900 dark:text-white">{item.label}</span>
-                      <span className="block text-xs text-neutral-500 dark:text-neutral-400">{item.description}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+          {MORE_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.label}
+                type="button"
+                role="menuitem"
+                onClick={() => handleSelect(item.label)}
+                className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              >
+                <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
+                <span className="text-sm font-medium text-neutral-900 dark:text-white">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

@@ -74,3 +74,18 @@ Run `npm run dev`, visually confirm in both light and dark mode (existing toggle
 - Lock ratio / Snap to grid toggle independently of the tool group and of each other
 - "Add" button opens the Insert menu with the 4 new sections and 9 items, each with icon + label + description
 - No TypeScript errors (`npm run build`)
+
+## Revision 2 — post-implementation feedback
+
+After the initial implementation, further feedback changed the toolbar as follows:
+
+- **Frame replaces Lock ratio** (slot 1) and joins the **exclusive tool group** rather than staying independent — all tools (Frame, Shape, Pen, Text, Comment) now activate one at a time. `Lock` icon/toggle removed entirely. `Snap to grid` remains the sole independent toggle (slot 2, unchanged position).
+- **Shape gains Triangle and Polygon** variants in its submenu — now 4 variants: Rectangle (`Square`), Ellipse (`Circle`), Triangle (`Triangle`), Polygon (`Hexagon`).
+- **Buttons with a submenu widen into a pill** (icon + label + `ChevronDown`), matching the existing "Add"/"More" button treatment, instead of a plain circular icon button. Applies to the Shape button.
+- **"Add" renamed to "More"**, and its content is drastically shortened: no more categorized sections — a flat list of 4 items, icon + label only (no description): Images (`Images`), Video (`Video`), Assets (`Boxes`), Plugin (`Puzzle`). `MenuSection`/`MenuItem`/`MENU_SECTIONS` replaced by a flat `MoreItem[]` (`MORE_ITEMS`).
+- **All dropdowns open upward** (`bottom-[calc(100%+8px)]`) — the More menu switched from opening downward to match the Shape submenu's existing upward direction.
+- **Dark-mode toggle moved to the page's top-right corner** (`absolute right-4 top-4`) in `src/App.tsx`, since menus opening upward need clear space above the toolbar rather than a stacked toggle button competing for that space.
+- `moreMenuOpen`/`setMoreMenuOpen` replaces `menuOpen`/`setMenuOpen` for clarity given the renamed button.
+- Final icon set: `Magnet`, `Frame`, `Shapes`, `Square`, `Circle`, `Triangle`, `Hexagon`, `PenTool`, `Type`, `MessageSquare`, `ChevronDown`, `Images`, `Video`, `Boxes`, `Puzzle` (`Lock`, `AlignLeft`, `Image`, `Component`, `MousePointerClick`, `LayoutTemplate` removed as unused).
+
+**Known layout nuance:** Frame (slot 1, exclusive) and Snap to grid (slot 2, independent) sit adjacent, so the exclusive tool group is visually split (Frame, then a gap at Snap to grid, then Shape/Pen/Text/Comment) rather than contiguous. This follows the literal request to replace "the first button" with Frame; flag if contiguous grouping (e.g., swapping Frame and Snap to grid) is preferred instead.

@@ -241,7 +241,9 @@ export function DesignToolbar() {
             setMoreMenuOpen((open) => !open);
           }}
           className={`flex h-8 items-center gap-1 rounded-full border bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 ${
-            moreMenuOpen ? "border-transparent" : "border-black/80 dark:border-white/80"
+            moreMenuOpen
+              ? "border-transparent"
+              : "border-t-black/90 border-x-black/55 border-b-black/55 dark:border-t-white/90 dark:border-x-white/55 dark:border-b-white/55"
           }`}
         >
           More

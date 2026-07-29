@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Magnet,
   MousePointer2,
   Hand,
   Frame,
@@ -93,14 +92,13 @@ const SHAPE_VARIANTS: ShapeVariant[] = [
   { label: "Polygon", icon: Hexagon },
 ];
 
-type ToggleKey = "snapToGrid" | "select" | "frame" | "shape" | "pen" | "text" | "comment";
+type ToggleKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 type ExclusiveKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 
 const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text", "comment"];
 
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    snapToGrid: false,
     select: false,
     frame: false,
     shape: false,
@@ -118,10 +116,6 @@ export function DesignToolbar() {
 
   const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
   const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
-
-  function toggle(key: "snapToGrid") {
-    setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
 
   function activateExclusive(key: ExclusiveKey) {
     setToggles((prev) => {
@@ -253,12 +247,6 @@ export function DesignToolbar() {
         </div>
 
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
-        <ToggleButton
-          icon={Magnet}
-          label="Snap to grid"
-          pressed={toggles.snapToGrid}
-          onToggle={() => toggle("snapToGrid")}
-        />
 
         <div className="group relative">
           <button
@@ -350,7 +338,7 @@ export function DesignToolbar() {
       {moreMenuOpen && (
         <div
           role="menu"
-          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-48 rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-40 rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;

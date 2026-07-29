@@ -98,6 +98,8 @@ export function DesignToolbar() {
   });
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
+  const [selectedShapeVariant, setSelectedShapeVariant] = useState<string | null>(null);
+  const [selectedMoreItem, setSelectedMoreItem] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   function toggle(key: "snapToGrid") {
@@ -127,12 +129,14 @@ export function DesignToolbar() {
 
   function handleSelect(label: string) {
     console.log(`Insert: ${label}`);
+    setSelectedMoreItem(label);
     setMoreMenuOpen(false);
   }
 
   function handleShapeSelect(label: string) {
     console.log(`Shape: ${label}`);
     activateExclusive("shape");
+    setSelectedShapeVariant(label);
     setShapeMenuOpen(false);
   }
 
@@ -204,16 +208,22 @@ export function DesignToolbar() {
             >
               {SHAPE_VARIANTS.map((variant) => {
                 const Icon = variant.icon;
+                const selected = toggles.shape && selectedShapeVariant === variant.label;
                 return (
                   <button
                     key={variant.label}
                     type="button"
                     role="menuitem"
+                    aria-pressed={selected}
                     onClick={() => handleShapeSelect(variant.label)}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors ${
+                      selected
+                        ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                    }`}
                   >
-                    <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
-                    <span className="text-sm font-medium text-neutral-900 dark:text-white">{variant.label}</span>
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                    <span className="text-sm font-medium">{variant.label}</span>
                   </button>
                 );
               })}
@@ -258,16 +268,22 @@ export function DesignToolbar() {
         >
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;
+            const selected = selectedMoreItem === item.label;
             return (
               <button
                 key={item.label}
                 type="button"
                 role="menuitem"
+                aria-pressed={selected}
                 onClick={() => handleSelect(item.label)}
-                className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className={`flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors ${
+                  selected
+                    ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                }`}
               >
-                <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
-                <span className="text-sm font-medium text-neutral-900 dark:text-white">{item.label}</span>
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                <span className="text-sm font-medium">{item.label}</span>
               </button>
             );
           })}

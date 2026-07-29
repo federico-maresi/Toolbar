@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Magnet,
+  MousePointer2,
+  Hand,
   Frame,
-  Shapes,
   Square,
   Circle,
   Triangle,
@@ -70,6 +71,16 @@ const MORE_ITEMS: MoreItem[] = [
   { label: "Plugin", icon: Puzzle },
 ];
 
+interface PointerVariant {
+  label: string;
+  icon: LucideIcon;
+}
+
+const POINTER_VARIANTS: PointerVariant[] = [
+  { label: "Select", icon: MousePointer2 },
+  { label: "Move", icon: Hand },
+];
+
 interface ShapeVariant {
   label: string;
   icon: LucideIcon;
@@ -82,14 +93,15 @@ const SHAPE_VARIANTS: ShapeVariant[] = [
   { label: "Polygon", icon: Hexagon },
 ];
 
-type ToggleKey = "snapToGrid" | "frame" | "shape" | "pen" | "text" | "comment";
-type ExclusiveKey = "frame" | "shape" | "pen" | "text" | "comment";
+type ToggleKey = "snapToGrid" | "select" | "frame" | "shape" | "pen" | "text" | "comment";
+type ExclusiveKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 
-const EXCLUSIVE_KEYS: ExclusiveKey[] = ["frame", "shape", "pen", "text", "comment"];
+const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text", "comment"];
 
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
     snapToGrid: false,
+    select: false,
     frame: false,
     shape: false,
     pen: false,
@@ -97,10 +109,15 @@ export function DesignToolbar() {
     comment: false,
   });
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [selectMenuOpen, setSelectMenuOpen] = useState(false);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
-  const [selectedShapeVariant, setSelectedShapeVariant] = useState<string | null>(null);
+  const [selectedPointerTool, setSelectedPointerTool] = useState("Select");
+  const [selectedShapeVariant, setSelectedShapeVariant] = useState("Rectangle");
   const [selectedMoreItem, setSelectedMoreItem] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
+  const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
 
   function toggle(key: "snapToGrid") {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -127,10 +144,23 @@ export function DesignToolbar() {
     });
   }
 
+  function closeMenus() {
+    setSelectMenuOpen(false);
+    setShapeMenuOpen(false);
+    setMoreMenuOpen(false);
+  }
+
   function handleSelect(label: string) {
     console.log(`Insert: ${label}`);
     setSelectedMoreItem(label);
     setMoreMenuOpen(false);
+  }
+
+  function handlePointerSelect(label: string) {
+    console.log(`Tool: ${label}`);
+    activateExclusive("select");
+    setSelectedPointerTool(label);
+    setSelectMenuOpen(false);
   }
 
   function handleShapeSelect(label: string) {
@@ -141,19 +171,17 @@ export function DesignToolbar() {
   }
 
   useEffect(() => {
-    if (!moreMenuOpen && !shapeMenuOpen) return;
+    if (!moreMenuOpen && !shapeMenuOpen && !selectMenuOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setMoreMenuOpen(false);
-        setShapeMenuOpen(false);
+        closeMenus();
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setMoreMenuOpen(false);
-        setShapeMenuOpen(false);
+        closeMenus();
       }
     }
 
@@ -163,11 +191,67 @@ export function DesignToolbar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [moreMenuOpen, shapeMenuOpen]);
+  }, [moreMenuOpen, shapeMenuOpen, selectMenuOpen]);
 
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="group relative">
+          <button
+            type="button"
+            aria-label={selectedPointerTool}
+            aria-haspopup="menu"
+            aria-expanded={selectMenuOpen}
+            aria-pressed={toggles.select}
+            onClick={() => {
+              setShapeMenuOpen(false);
+              setMoreMenuOpen(false);
+              setSelectMenuOpen((open) => !open);
+            }}
+            className={`flex h-8 items-center gap-0.5 rounded-full pl-2 pr-1.5 transition-colors ${
+              toggles.select || selectMenuOpen
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+            }`}
+          >
+            <PointerIcon className="h-4 w-4" strokeWidth={2} />
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
+              strokeWidth={2}
+            />
+          </button>
+          {!selectMenuOpen && <Tooltip label={selectedPointerTool} />}
+
+          {selectMenuOpen && (
+            <div
+              role="menu"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-40 -translate-x-1/2 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              {POINTER_VARIANTS.map((variant) => {
+                const Icon = variant.icon;
+                const selected = selectedPointerTool === variant.label;
+                return (
+                  <button
+                    key={variant.label}
+                    type="button"
+                    role="menuitem"
+                    aria-pressed={selected}
+                    onClick={() => handlePointerSelect(variant.label)}
+                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors ${
+                      selected
+                        ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                    <span className="text-sm font-medium">{variant.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
         <ToggleButton
           icon={Magnet}
@@ -184,6 +268,7 @@ export function DesignToolbar() {
             aria-expanded={shapeMenuOpen}
             aria-pressed={toggles.shape}
             onClick={() => {
+              setSelectMenuOpen(false);
               setMoreMenuOpen(false);
               setShapeMenuOpen((open) => !open);
             }}
@@ -193,7 +278,7 @@ export function DesignToolbar() {
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
-            <Shapes className="h-4 w-4" strokeWidth={2} />
+            <ShapeIcon className="h-4 w-4" strokeWidth={2} />
             <ChevronDown
               className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
               strokeWidth={2}
@@ -208,7 +293,7 @@ export function DesignToolbar() {
             >
               {SHAPE_VARIANTS.map((variant) => {
                 const Icon = variant.icon;
-                const selected = toggles.shape && selectedShapeVariant === variant.label;
+                const selected = selectedShapeVariant === variant.label;
                 return (
                   <button
                     key={variant.label}
@@ -247,6 +332,7 @@ export function DesignToolbar() {
           aria-haspopup="menu"
           aria-expanded={moreMenuOpen}
           onClick={() => {
+            setSelectMenuOpen(false);
             setShapeMenuOpen(false);
             setMoreMenuOpen((open) => !open);
           }}

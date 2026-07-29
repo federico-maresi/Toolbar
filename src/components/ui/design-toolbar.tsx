@@ -183,14 +183,13 @@ export function DesignToolbar() {
               setMoreMenuOpen(false);
               setShapeMenuOpen((open) => !open);
             }}
-            className={`flex h-8 items-center gap-1 rounded-full pl-2.5 pr-2 text-sm font-medium transition-colors ${
+            className={`flex h-8 items-center gap-0.5 rounded-full pl-2 pr-1.5 transition-colors ${
               toggles.shape || shapeMenuOpen
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
             <Shapes className="h-4 w-4" strokeWidth={2} />
-            Shape
             <ChevronDown
               className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
               strokeWidth={2}

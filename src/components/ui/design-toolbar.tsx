@@ -1,22 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Bold,
-  Italic,
-  Heading,
-  Heading2,
-  Heading3,
-  List,
-  ListOrdered,
-  Code,
+  Lock,
+  Magnet,
+  Shapes,
+  Square,
+  Circle,
+  PenTool,
+  Type,
+  MessageSquare,
   ChevronDown,
-  FileText,
-  CircleCheck,
-  Info,
-  TriangleAlert,
-  Columns2,
-  Target,
-  Box,
-  LayoutGrid,
+  Hexagon,
+  AlignLeft,
+  Image,
+  Component,
+  MousePointerClick,
+  LayoutTemplate,
   type LucideIcon,
 } from "lucide-react";
 
@@ -73,65 +71,65 @@ interface MenuSection {
 
 const MENU_SECTIONS: MenuSection[] = [
   {
-    title: "STRUCTURE & PATH",
+    title: "SHAPES",
     items: [
-      { label: "Free text", description: "Formattable text paragraph", icon: FileText },
-      { label: "Steps", description: "Numbered steps", icon: ListOrdered },
-      { label: "Do / Don'ts", description: "When to / when not to", icon: CircleCheck },
+      { label: "Rectangle", description: "Basic rectangle shape", icon: Square },
+      { label: "Ellipse", description: "Basic ellipse shape", icon: Circle },
+      { label: "Polygon", description: "Multi-sided polygon", icon: Hexagon },
     ],
   },
   {
-    title: "EMPHASIS",
+    title: "TEXT",
     items: [
-      { label: "Callout", description: "Highlighted note", icon: Info },
-      { label: "Warn", description: "Warnings", icon: TriangleAlert },
+      { label: "Heading", description: "Large heading text", icon: Type },
+      { label: "Body text", description: "Paragraph body text", icon: AlignLeft },
     ],
   },
   {
-    title: "COMPARISON & CHOICE",
+    title: "MEDIA",
     items: [
-      { label: "Comparison", description: "N-option comparison table", icon: Columns2 },
-      { label: "Scenarios", description: "Use case scenarios", icon: Target },
+      { label: "Image", description: "Image placeholder", icon: Image },
+      { label: "Icon", description: "Icon from library", icon: Component },
     ],
   },
   {
-    title: "PRODUCT & FEATURE",
+    title: "COMPONENTS",
     items: [
-      { label: "Product Card", description: "Product/tool card", icon: Box },
-      { label: "Feature Grid", description: "Feature grid", icon: LayoutGrid },
+      { label: "Button", description: "Interactive button component", icon: MousePointerClick },
+      { label: "Card", description: "Card container component", icon: LayoutTemplate },
     ],
   },
 ];
 
-interface HeadingLevel {
+interface ShapeVariant {
   label: string;
   icon: LucideIcon;
 }
 
-const HEADING_LEVELS: HeadingLevel[] = [
-  { label: "Heading 2", icon: Heading2 },
-  { label: "Heading 3", icon: Heading3 },
+const SHAPE_VARIANTS: ShapeVariant[] = [
+  { label: "Rectangle", icon: Square },
+  { label: "Ellipse", icon: Circle },
 ];
 
-type ToggleKey = "bold" | "italic" | "heading" | "bulletList" | "numberedList" | "code";
-type ExclusiveKey = "heading" | "bulletList" | "numberedList" | "code";
+type ToggleKey = "lockRatio" | "snapToGrid" | "shape" | "pen" | "text" | "comment";
+type ExclusiveKey = "shape" | "pen" | "text" | "comment";
 
-const EXCLUSIVE_KEYS: ExclusiveKey[] = ["heading", "bulletList", "numberedList", "code"];
+const EXCLUSIVE_KEYS: ExclusiveKey[] = ["shape", "pen", "text", "comment"];
 
-export function EditorToolbar() {
+export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    bold: false,
-    italic: false,
-    heading: false,
-    bulletList: false,
-    numberedList: false,
-    code: false,
+    lockRatio: false,
+    snapToGrid: false,
+    shape: false,
+    pen: false,
+    text: false,
+    comment: false,
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [headingMenuOpen, setHeadingMenuOpen] = useState(false);
+  const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function toggle(key: "bold" | "italic") {
+  function toggle(key: "lockRatio" | "snapToGrid") {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
@@ -161,26 +159,26 @@ export function EditorToolbar() {
     setMenuOpen(false);
   }
 
-  function handleHeadingSelect(label: string) {
-    console.log(`Format: ${label}`);
-    activateExclusive("heading");
-    setHeadingMenuOpen(false);
+  function handleShapeSelect(label: string) {
+    console.log(`Shape: ${label}`);
+    activateExclusive("shape");
+    setShapeMenuOpen(false);
   }
 
   useEffect(() => {
-    if (!menuOpen && !headingMenuOpen) return;
+    if (!menuOpen && !shapeMenuOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
-        setHeadingMenuOpen(false);
+        setShapeMenuOpen(false);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setMenuOpen(false);
-        setHeadingMenuOpen(false);
+        setShapeMenuOpen(false);
       }
     }
 
@@ -190,52 +188,52 @@ export function EditorToolbar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuOpen, headingMenuOpen]);
+  }, [menuOpen, shapeMenuOpen]);
 
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <ToggleButton icon={Bold} label="Bold" pressed={toggles.bold} onToggle={() => toggle("bold")} />
-        <ToggleButton icon={Italic} label="Italic" pressed={toggles.italic} onToggle={() => toggle("italic")} />
+        <ToggleButton icon={Lock} label="Lock ratio" pressed={toggles.lockRatio} onToggle={() => toggle("lockRatio")} />
+        <ToggleButton icon={Magnet} label="Snap to grid" pressed={toggles.snapToGrid} onToggle={() => toggle("snapToGrid")} />
 
         <div className="group relative">
           <button
             type="button"
-            aria-label="Heading"
+            aria-label="Shape"
             aria-haspopup="menu"
-            aria-expanded={headingMenuOpen}
-            aria-pressed={toggles.heading}
+            aria-expanded={shapeMenuOpen}
+            aria-pressed={toggles.shape}
             onClick={() => {
               setMenuOpen(false);
-              setHeadingMenuOpen((open) => !open);
+              setShapeMenuOpen((open) => !open);
             }}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-              toggles.heading || headingMenuOpen
+              toggles.shape || shapeMenuOpen
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
                 : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
-            <Heading className="h-4 w-4" strokeWidth={2} />
+            <Shapes className="h-4 w-4" strokeWidth={2} />
           </button>
-          {!headingMenuOpen && <Tooltip label="Heading" />}
+          {!shapeMenuOpen && <Tooltip label="Shape" />}
 
-          {headingMenuOpen && (
+          {shapeMenuOpen && (
             <div
               role="menu"
               className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-40 -translate-x-1/2 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
             >
-              {HEADING_LEVELS.map((level) => {
-                const Icon = level.icon;
+              {SHAPE_VARIANTS.map((variant) => {
+                const Icon = variant.icon;
                 return (
                   <button
-                    key={level.label}
+                    key={variant.label}
                     type="button"
                     role="menuitem"
-                    onClick={() => handleHeadingSelect(level.label)}
+                    onClick={() => handleShapeSelect(variant.label)}
                     className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" strokeWidth={2} />
-                    <span className="text-sm font-medium text-neutral-900 dark:text-white">{level.label}</span>
+                    <span className="text-sm font-medium text-neutral-900 dark:text-white">{variant.label}</span>
                   </button>
                 );
               })}
@@ -243,19 +241,14 @@ export function EditorToolbar() {
           )}
         </div>
 
+        <ToggleButton icon={PenTool} label="Pen" pressed={toggles.pen} onToggle={() => toggleExclusive("pen")} />
+        <ToggleButton icon={Type} label="Text" pressed={toggles.text} onToggle={() => toggleExclusive("text")} />
         <ToggleButton
-          icon={List}
-          label="Bullet list"
-          pressed={toggles.bulletList}
-          onToggle={() => toggleExclusive("bulletList")}
+          icon={MessageSquare}
+          label="Comment"
+          pressed={toggles.comment}
+          onToggle={() => toggleExclusive("comment")}
         />
-        <ToggleButton
-          icon={ListOrdered}
-          label="Numbered list"
-          pressed={toggles.numberedList}
-          onToggle={() => toggleExclusive("numberedList")}
-        />
-        <ToggleButton icon={Code} label="Code" pressed={toggles.code} onToggle={() => toggleExclusive("code")} />
 
         <div className="mx-1 h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
@@ -264,7 +257,7 @@ export function EditorToolbar() {
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           onClick={() => {
-            setHeadingMenuOpen(false);
+            setShapeMenuOpen(false);
             setMenuOpen((open) => !open);
           }}
           className="flex h-8 items-center gap-1 rounded-full bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"

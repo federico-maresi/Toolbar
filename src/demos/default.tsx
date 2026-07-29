@@ -1,9 +1,9 @@
-import { EditorToolbar } from "@/components/ui/editor-toolbar";
+import { DesignToolbar } from "@/components/ui/design-toolbar";
 
-export default function EditorToolbarDemo() {
+export default function DesignToolbarDemo() {
   return (
-    <div className="flex min-h-[240px] w-full items-center justify-center bg-neutral-50 p-8 dark:bg-neutral-950">
-      <EditorToolbar />
+    <div className="flex min-h-[420px] w-full items-center justify-center p-8">
+      <DesignToolbar />
     </div>
   );
 }

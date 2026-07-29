@@ -240,7 +240,7 @@ export function DesignToolbar() {
             setShapeMenuOpen(false);
             setMoreMenuOpen((open) => !open);
           }}
-          className="relative flex h-8 items-center gap-1 rounded-full border border-black/40 bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors before:pointer-events-none before:absolute before:inset-px before:rounded-full before:border before:border-x-transparent before:border-t-white/20 before:border-b-black/30 before:content-[''] hover:bg-neutral-700 dark:border-black/10 dark:bg-white dark:text-neutral-900 dark:before:border-t-transparent dark:before:border-b-black/15 dark:hover:bg-neutral-200"
+          className="flex h-8 items-center gap-1 rounded-full border border-black/15 bg-neutral-900 pl-3 pr-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:border-white/15 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
         >
           More
           <ChevronDown className={`h-4 w-4 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />

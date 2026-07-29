@@ -190,7 +190,7 @@ export function DesignToolbar() {
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-3xl border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="group relative flex items-center gap-0.5">
+        <div className="group relative flex items-center gap-0">
           <button
             type="button"
             aria-label={selectedPointerTool}
@@ -259,7 +259,7 @@ export function DesignToolbar() {
 
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
 
-        <div className="group relative flex items-center gap-0.5">
+        <div className="group relative flex items-center gap-0">
           <button
             type="button"
             aria-label="Shape"

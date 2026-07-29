@@ -191,29 +191,40 @@ export function DesignToolbar() {
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
         <div className="group relative">
-          <button
-            type="button"
-            aria-label={selectedPointerTool}
-            aria-haspopup="menu"
-            aria-expanded={selectMenuOpen}
-            aria-pressed={toggles.select}
-            onClick={() => {
-              setShapeMenuOpen(false);
-              setMoreMenuOpen(false);
-              setSelectMenuOpen((open) => !open);
-            }}
-            className={`flex h-8 items-center gap-0.5 rounded-full pl-2 pr-1.5 transition-colors ${
+          <div
+            className={`flex h-8 items-center overflow-hidden rounded-full transition-colors ${
               toggles.select || selectMenuOpen
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
-                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
-            <PointerIcon className="h-4 w-4" strokeWidth={2} />
-            <ChevronDown
-              className={`h-4 w-4 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
-              strokeWidth={2}
-            />
-          </button>
+            <button
+              type="button"
+              aria-label={selectedPointerTool}
+              aria-pressed={toggles.select}
+              onClick={() => toggleExclusive("select")}
+              className="flex h-full items-center pl-2 pr-1 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+            >
+              <PointerIcon className="h-4 w-4" strokeWidth={2} />
+            </button>
+            <button
+              type="button"
+              aria-label="Choose pointer tool"
+              aria-haspopup="menu"
+              aria-expanded={selectMenuOpen}
+              onClick={() => {
+                setShapeMenuOpen(false);
+                setMoreMenuOpen(false);
+                setSelectMenuOpen((open) => !open);
+              }}
+              className="flex h-full items-center pl-0.5 pr-1.5 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+            >
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
+                strokeWidth={2}
+              />
+            </button>
+          </div>
           {!selectMenuOpen && <Tooltip label={selectedPointerTool} />}
 
           {selectMenuOpen && (
@@ -249,29 +260,40 @@ export function DesignToolbar() {
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
 
         <div className="group relative">
-          <button
-            type="button"
-            aria-label="Shape"
-            aria-haspopup="menu"
-            aria-expanded={shapeMenuOpen}
-            aria-pressed={toggles.shape}
-            onClick={() => {
-              setSelectMenuOpen(false);
-              setMoreMenuOpen(false);
-              setShapeMenuOpen((open) => !open);
-            }}
-            className={`flex h-8 items-center gap-0.5 rounded-full pl-2 pr-1.5 transition-colors ${
+          <div
+            className={`flex h-8 items-center overflow-hidden rounded-full transition-colors ${
               toggles.shape || shapeMenuOpen
                 ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
-                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
-            <ShapeIcon className="h-4 w-4" strokeWidth={2} />
-            <ChevronDown
-              className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
-              strokeWidth={2}
-            />
-          </button>
+            <button
+              type="button"
+              aria-label="Shape"
+              aria-pressed={toggles.shape}
+              onClick={() => toggleExclusive("shape")}
+              className="flex h-full items-center pl-2 pr-1 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+            >
+              <ShapeIcon className="h-4 w-4" strokeWidth={2} />
+            </button>
+            <button
+              type="button"
+              aria-label="Choose shape"
+              aria-haspopup="menu"
+              aria-expanded={shapeMenuOpen}
+              onClick={() => {
+                setSelectMenuOpen(false);
+                setMoreMenuOpen(false);
+                setShapeMenuOpen((open) => !open);
+              }}
+              className="flex h-full items-center pl-0.5 pr-1.5 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+            >
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
+                strokeWidth={2}
+              />
+            </button>
+          </div>
           {!shapeMenuOpen && <Tooltip label="Shape" />}
 
           {shapeMenuOpen && (

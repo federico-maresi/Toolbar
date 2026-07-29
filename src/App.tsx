@@ -1,5 +1,5 @@
 import { useState } from "react";
-import EditorToolbar from "./components/editor-toolbar";
+import EditorToolbarDemo from "@/demos/default";
 
 export default function App() {
   const [dark, setDark] = useState(false);
@@ -14,7 +14,7 @@ export default function App() {
         >
           Toggle {dark ? "light" : "dark"} mode
         </button>
-        <EditorToolbar />
+        <EditorToolbarDemo />
       </div>
     </div>
   );

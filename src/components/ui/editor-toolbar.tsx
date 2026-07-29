@@ -118,7 +118,7 @@ type ExclusiveKey = "heading" | "bulletList" | "numberedList" | "code";
 
 const EXCLUSIVE_KEYS: ExclusiveKey[] = ["heading", "bulletList", "numberedList", "code"];
 
-export default function EditorToolbar() {
+export function EditorToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
     bold: false,
     italic: false,

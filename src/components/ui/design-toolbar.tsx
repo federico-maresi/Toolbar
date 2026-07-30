@@ -217,36 +217,36 @@ export function DesignToolbar() {
               />
             </button>
             {!selectMenuOpen && <Tooltip label={`${selectedPointerTool} tools`} />}
-          </div>
 
-          {selectMenuOpen && (
-            <div
-              role="menu"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-36 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-            >
-              {POINTER_VARIANTS.map((variant) => {
-                const Icon = variant.icon;
-                const selected = selectedPointerTool === variant.label;
-                return (
-                  <button
-                    key={variant.label}
-                    type="button"
-                    role="menuitem"
-                    aria-pressed={selected}
-                    onClick={() => handlePointerSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
-                      selected
-                        ? "bg-neutral-200 text-neutral-900"
-                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                    <span className="text-sm font-medium">{variant.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+            {selectMenuOpen && (
+              <div
+                role="menu"
+                className="absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+              >
+                {POINTER_VARIANTS.map((variant) => {
+                  const Icon = variant.icon;
+                  const selected = selectedPointerTool === variant.label;
+                  return (
+                    <button
+                      key={variant.label}
+                      type="button"
+                      role="menuitem"
+                      aria-pressed={selected}
+                      onClick={() => handlePointerSelect(variant.label)}
+                      className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
+                        selected
+                          ? "bg-neutral-200 text-neutral-900"
+                          : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                      <span className="text-sm font-medium">{variant.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => activateExclusive("frame")} />
@@ -291,36 +291,36 @@ export function DesignToolbar() {
               />
             </button>
             {!shapeMenuOpen && <Tooltip label="Shape tools" />}
-          </div>
 
-          {shapeMenuOpen && (
-            <div
-              role="menu"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-36 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-            >
-              {SHAPE_VARIANTS.map((variant) => {
-                const Icon = variant.icon;
-                const selected = selectedShapeVariant === variant.label;
-                return (
-                  <button
-                    key={variant.label}
-                    type="button"
-                    role="menuitem"
-                    aria-pressed={selected}
-                    onClick={() => handleShapeSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
-                      selected
-                        ? "bg-neutral-200 text-neutral-900"
-                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                    <span className="text-sm font-medium">{variant.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+            {shapeMenuOpen && (
+              <div
+                role="menu"
+                className="absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+              >
+                {SHAPE_VARIANTS.map((variant) => {
+                  const Icon = variant.icon;
+                  const selected = selectedShapeVariant === variant.label;
+                  return (
+                    <button
+                      key={variant.label}
+                      type="button"
+                      role="menuitem"
+                      aria-pressed={selected}
+                      onClick={() => handleShapeSelect(variant.label)}
+                      className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
+                        selected
+                          ? "bg-neutral-200 text-neutral-900"
+                          : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                      <span className="text-sm font-medium">{variant.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <ToggleButton icon={PenTool} label="Pen" pressed={toggles.pen} onToggle={() => activateExclusive("pen")} />

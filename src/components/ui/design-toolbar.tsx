@@ -218,7 +218,7 @@ export function DesignToolbar() {
                   strokeWidth={2}
                 />
               </button>
-              {!selectMenuOpen && <Tooltip label={`${selectedPointerTool} tools`} />}
+              {!selectMenuOpen && <Tooltip label="Move tools" />}
             </div>
 
             <div

@@ -35,7 +35,7 @@ function ToggleButton({ icon: Icon, label, pressed, onToggle }: ToggleButtonProp
         onClick={onToggle}
         className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
           pressed
-            ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+            ? "bg-[#c6ff00] text-neutral-900"
             : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
         }`}
       >
@@ -199,7 +199,7 @@ export function DesignToolbar() {
               onClick={() => toggleExclusive("select")}
               className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                 toggles.select
-                  ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                  ? "bg-[#c6ff00] text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
               }`}
             >
@@ -273,7 +273,7 @@ export function DesignToolbar() {
               onClick={() => toggleExclusive("shape")}
               className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                 toggles.shape
-                  ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                  ? "bg-[#c6ff00] text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
               }`}
             >

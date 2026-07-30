@@ -190,22 +190,16 @@ export function DesignToolbar() {
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-1 rounded-3xl border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <div
-          className={`group relative flex items-center gap-0 rounded-full transition-colors ${
-            selectMenuOpen ? "bg-neutral-100 dark:bg-neutral-700" : ""
-          }`}
-        >
+        <div className="group relative flex items-center gap-0">
           <button
             type="button"
             aria-label={selectedPointerTool}
             aria-pressed={toggles.select}
             onClick={() => toggleExclusive("select")}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-              selectMenuOpen
-                ? "text-neutral-900 dark:text-white"
-                : toggles.select
-                  ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+              toggles.select
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
             <PointerIcon className="h-4 w-4" strokeWidth={2} />
@@ -221,7 +215,9 @@ export function DesignToolbar() {
               setSelectMenuOpen((open) => !open);
             }}
             className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
-              selectMenuOpen ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"
+              selectMenuOpen
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
             <ChevronDown
@@ -263,22 +259,16 @@ export function DesignToolbar() {
 
         <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
 
-        <div
-          className={`group relative flex items-center gap-0 rounded-full transition-colors ${
-            shapeMenuOpen ? "bg-neutral-100 dark:bg-neutral-700" : ""
-          }`}
-        >
+        <div className="group relative flex items-center gap-0">
           <button
             type="button"
             aria-label="Shape"
             aria-pressed={toggles.shape}
             onClick={() => toggleExclusive("shape")}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-              shapeMenuOpen
-                ? "text-neutral-900 dark:text-white"
-                : toggles.shape
-                  ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+              toggles.shape
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             }`}
           >
             <ShapeIcon className="h-4 w-4" strokeWidth={2} />
@@ -294,7 +284,9 @@ export function DesignToolbar() {
               setShapeMenuOpen((open) => !open);
             }}
             className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
-              shapeMenuOpen ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"
+              shapeMenuOpen
+                ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-700 dark:text-white"
+                : "text-neutral-500 dark:text-neutral-400"
             }`}
           >
             <ChevronDown

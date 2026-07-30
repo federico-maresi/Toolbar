@@ -3,7 +3,6 @@ import {
   MousePointer2,
   Hand,
   Frame,
-  Magnet,
   Square,
   Circle,
   Triangle,
@@ -12,9 +11,9 @@ import {
   Type,
   MessageSquare,
   ChevronDown,
-  Images,
-  Video,
+  Image,
   Boxes,
+  Variable,
   Puzzle,
   type LucideIcon,
 } from "lucide-react";
@@ -65,10 +64,10 @@ interface MoreItem {
 }
 
 const MORE_ITEMS: MoreItem[] = [
-  { label: "Images", icon: Images },
-  { label: "Video", icon: Video },
+  { label: "Media", icon: Image },
   { label: "Assets", icon: Boxes },
-  { label: "Plugin", icon: Puzzle },
+  { label: "Variables", icon: Variable },
+  { label: "Plugins", icon: Puzzle },
 ];
 
 interface PointerVariant {
@@ -93,14 +92,13 @@ const SHAPE_VARIANTS: ShapeVariant[] = [
   { label: "Polygon", icon: Hexagon },
 ];
 
-type ToggleKey = "snapToGrid" | "select" | "frame" | "shape" | "pen" | "text" | "comment";
+type ToggleKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 type ExclusiveKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 
 const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text", "comment"];
 
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    snapToGrid: false,
     select: true,
     frame: false,
     shape: false,
@@ -117,10 +115,6 @@ export function DesignToolbar() {
 
   const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
   const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
-
-  function toggle(key: "snapToGrid") {
-    setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
 
   function activateExclusive(key: ExclusiveKey) {
     setToggles((prev) => {
@@ -337,9 +331,7 @@ export function DesignToolbar() {
           pressed={toggles.comment}
           onToggle={() => activateExclusive("comment")}
         />
-        <ToggleButton icon={Magnet} label="Snap to grid" pressed={toggles.snapToGrid} onToggle={() => toggle("snapToGrid")} />
-
-        <div className="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
+        <div className="h-5 w-px bg-neutral-300 dark:bg-neutral-600" />
 
         <button
           type="button"

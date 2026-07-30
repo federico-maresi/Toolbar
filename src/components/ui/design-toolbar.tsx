@@ -101,7 +101,7 @@ const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
     snapToGrid: false,
-    select: false,
+    select: true,
     frame: false,
     shape: false,
     pen: false,
@@ -228,7 +228,7 @@ export function DesignToolbar() {
           {selectMenuOpen && (
             <div
               role="menu"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-40 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-36 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
             >
               {POINTER_VARIANTS.map((variant) => {
                 const Icon = variant.icon;
@@ -302,7 +302,7 @@ export function DesignToolbar() {
           {shapeMenuOpen && (
             <div
               role="menu"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-40 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-36 -translate-x-1/2 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
             >
               {SHAPE_VARIANTS.map((variant) => {
                 const Icon = variant.icon;
@@ -364,7 +364,7 @@ export function DesignToolbar() {
       {moreMenuOpen && (
         <div
           role="menu"
-          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-40 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;

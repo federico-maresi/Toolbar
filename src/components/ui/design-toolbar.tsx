@@ -345,7 +345,7 @@ export function DesignToolbar() {
           onToggle={() => toggleExclusive("comment")}
         />
 
-        <div className="mx-1 h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
+        <div className="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
         <button
           type="button"

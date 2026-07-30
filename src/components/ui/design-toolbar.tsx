@@ -76,8 +76,8 @@ interface PointerVariant {
 }
 
 const POINTER_VARIANTS: PointerVariant[] = [
-  { label: "Select", icon: MousePointer2 },
-  { label: "Move", icon: Hand },
+  { label: "Move", icon: MousePointer2 },
+  { label: "Hand tool", icon: Hand },
 ];
 
 interface ShapeVariant {
@@ -109,7 +109,7 @@ export function DesignToolbar() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [selectMenuOpen, setSelectMenuOpen] = useState(false);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
-  const [selectedPointerTool, setSelectedPointerTool] = useState("Select");
+  const [selectedPointerTool, setSelectedPointerTool] = useState("Move");
   const [selectedShapeVariant, setSelectedShapeVariant] = useState("Rectangle");
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -195,29 +195,31 @@ export function DesignToolbar() {
             </button>
             {!selectMenuOpen && <Tooltip label={selectedPointerTool} />}
           </div>
-          <div className="group relative">
-            <button
-              type="button"
-              aria-label="Choose pointer tool"
-              aria-haspopup="menu"
-              aria-expanded={selectMenuOpen}
-              onClick={() => {
-                setShapeMenuOpen(false);
-                setMoreMenuOpen(false);
-                setSelectMenuOpen((open) => !open);
-              }}
-              className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
-                selectMenuOpen
-                  ? "bg-neutral-200 text-neutral-900"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-              }`}
-            >
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
-                strokeWidth={2}
-              />
-            </button>
-            {!selectMenuOpen && <Tooltip label={`${selectedPointerTool} tools`} />}
+          <div className="relative">
+            <div className="group relative">
+              <button
+                type="button"
+                aria-label="Choose pointer tool"
+                aria-haspopup="menu"
+                aria-expanded={selectMenuOpen}
+                onClick={() => {
+                  setShapeMenuOpen(false);
+                  setMoreMenuOpen(false);
+                  setSelectMenuOpen((open) => !open);
+                }}
+                className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
+                  selectMenuOpen
+                    ? "bg-neutral-200 text-neutral-900"
+                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                }`}
+              >
+                <ChevronDown
+                  className={`h-3 w-3 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
+                  strokeWidth={2}
+                />
+              </button>
+              {!selectMenuOpen && <Tooltip label={`${selectedPointerTool} tools`} />}
+            </div>
 
             <div
               role="menu"
@@ -269,29 +271,31 @@ export function DesignToolbar() {
             </button>
             {!shapeMenuOpen && <Tooltip label="Shape" />}
           </div>
-          <div className="group relative">
-            <button
-              type="button"
-              aria-label="Choose shape"
-              aria-haspopup="menu"
-              aria-expanded={shapeMenuOpen}
-              onClick={() => {
-                setSelectMenuOpen(false);
-                setMoreMenuOpen(false);
-                setShapeMenuOpen((open) => !open);
-              }}
-              className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
-                shapeMenuOpen
-                  ? "bg-neutral-200 text-neutral-900"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-              }`}
-            >
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
-                strokeWidth={2}
-              />
-            </button>
-            {!shapeMenuOpen && <Tooltip label="Shape tools" />}
+          <div className="relative">
+            <div className="group relative">
+              <button
+                type="button"
+                aria-label="Choose shape"
+                aria-haspopup="menu"
+                aria-expanded={shapeMenuOpen}
+                onClick={() => {
+                  setSelectMenuOpen(false);
+                  setMoreMenuOpen(false);
+                  setShapeMenuOpen((open) => !open);
+                }}
+                className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
+                  shapeMenuOpen
+                    ? "bg-neutral-200 text-neutral-900"
+                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                }`}
+              >
+                <ChevronDown
+                  className={`h-3 w-3 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
+                  strokeWidth={2}
+                />
+              </button>
+              {!shapeMenuOpen && <Tooltip label="Shape tools" />}
+            </div>
 
             <div
               role="menu"

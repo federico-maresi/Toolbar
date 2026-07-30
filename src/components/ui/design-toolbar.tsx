@@ -3,6 +3,7 @@ import {
   MousePointer2,
   Hand,
   Frame,
+  Magnet,
   Square,
   Circle,
   Triangle,
@@ -92,13 +93,14 @@ const SHAPE_VARIANTS: ShapeVariant[] = [
   { label: "Polygon", icon: Hexagon },
 ];
 
-type ToggleKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
+type ToggleKey = "snapToGrid" | "select" | "frame" | "shape" | "pen" | "text" | "comment";
 type ExclusiveKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
 
 const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text", "comment"];
 
 export function DesignToolbar() {
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
+    snapToGrid: false,
     select: false,
     frame: false,
     shape: false,
@@ -111,25 +113,17 @@ export function DesignToolbar() {
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
   const [selectedPointerTool, setSelectedPointerTool] = useState("Select");
   const [selectedShapeVariant, setSelectedShapeVariant] = useState("Rectangle");
-  const [selectedMoreItem, setSelectedMoreItem] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
   const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
 
-  function activateExclusive(key: ExclusiveKey) {
-    setToggles((prev) => {
-      const next = { ...prev };
-      for (const exclusiveKey of EXCLUSIVE_KEYS) {
-        next[exclusiveKey] = exclusiveKey === key;
-      }
-      return next;
-    });
+  function toggle(key: "snapToGrid") {
+    setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
-  function toggleExclusive(key: ExclusiveKey) {
+  function activateExclusive(key: ExclusiveKey) {
     setToggles((prev) => {
-      if (prev[key]) return { ...prev, [key]: false };
       const next = { ...prev };
       for (const exclusiveKey of EXCLUSIVE_KEYS) {
         next[exclusiveKey] = exclusiveKey === key;
@@ -146,7 +140,6 @@ export function DesignToolbar() {
 
   function handleSelect(label: string) {
     console.log(`Insert: ${label}`);
-    setSelectedMoreItem(label);
     setMoreMenuOpen(false);
   }
 
@@ -196,7 +189,7 @@ export function DesignToolbar() {
               type="button"
               aria-label={selectedPointerTool}
               aria-pressed={toggles.select}
-              onClick={() => toggleExclusive("select")}
+              onClick={() => activateExclusive("select")}
               className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                 toggles.select
                   ? "bg-[#c6ff00] text-neutral-900"
@@ -247,7 +240,7 @@ export function DesignToolbar() {
                     role="menuitem"
                     aria-pressed={selected}
                     onClick={() => handlePointerSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-1.5 text-left transition-colors ${
+                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
                       selected
                         ? "bg-neutral-200 text-neutral-900"
                         : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
@@ -262,7 +255,7 @@ export function DesignToolbar() {
           )}
         </div>
 
-        <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => toggleExclusive("frame")} />
+        <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => activateExclusive("frame")} />
 
         <div className="relative flex items-center gap-0">
           <div className="group relative">
@@ -270,7 +263,7 @@ export function DesignToolbar() {
               type="button"
               aria-label="Shape"
               aria-pressed={toggles.shape}
-              onClick={() => toggleExclusive("shape")}
+              onClick={() => activateExclusive("shape")}
               className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                 toggles.shape
                   ? "bg-[#c6ff00] text-neutral-900"
@@ -321,7 +314,7 @@ export function DesignToolbar() {
                     role="menuitem"
                     aria-pressed={selected}
                     onClick={() => handleShapeSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-1.5 text-left transition-colors ${
+                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
                       selected
                         ? "bg-neutral-200 text-neutral-900"
                         : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
@@ -336,14 +329,15 @@ export function DesignToolbar() {
           )}
         </div>
 
-        <ToggleButton icon={PenTool} label="Pen" pressed={toggles.pen} onToggle={() => toggleExclusive("pen")} />
-        <ToggleButton icon={Type} label="Text" pressed={toggles.text} onToggle={() => toggleExclusive("text")} />
+        <ToggleButton icon={PenTool} label="Pen" pressed={toggles.pen} onToggle={() => activateExclusive("pen")} />
+        <ToggleButton icon={Type} label="Text" pressed={toggles.text} onToggle={() => activateExclusive("text")} />
         <ToggleButton
           icon={MessageSquare}
           label="Comment"
           pressed={toggles.comment}
-          onToggle={() => toggleExclusive("comment")}
+          onToggle={() => activateExclusive("comment")}
         />
+        <ToggleButton icon={Magnet} label="Snap to grid" pressed={toggles.snapToGrid} onToggle={() => toggle("snapToGrid")} />
 
         <div className="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
@@ -374,19 +368,13 @@ export function DesignToolbar() {
         >
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;
-            const selected = selectedMoreItem === item.label;
             return (
               <button
                 key={item.label}
                 type="button"
                 role="menuitem"
-                aria-pressed={selected}
                 onClick={() => handleSelect(item.label)}
-                className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
-                  selected
-                    ? "bg-neutral-200 text-neutral-900"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                }`}
+                className="flex w-full items-center gap-2 rounded-full px-2 py-2 text-left text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 active:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:active:bg-neutral-200 dark:active:text-neutral-900"
               >
                 <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
                 <span className="text-sm font-medium">{item.label}</span>

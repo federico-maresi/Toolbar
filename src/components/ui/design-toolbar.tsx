@@ -218,7 +218,7 @@ export function DesignToolbar() {
                 setMoreMenuOpen(false);
                 setSelectMenuOpen((open) => !open);
               }}
-              className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
+              className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
                 selectMenuOpen
                   ? "bg-neutral-200 text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
@@ -292,7 +292,7 @@ export function DesignToolbar() {
                 setMoreMenuOpen(false);
                 setShapeMenuOpen((open) => !open);
               }}
-              className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
+              className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
                 shapeMenuOpen
                   ? "bg-neutral-200 text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"

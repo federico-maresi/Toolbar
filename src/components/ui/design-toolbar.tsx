@@ -116,6 +116,12 @@ export function DesignToolbar() {
   const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
   const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
 
+  function closeMenus() {
+    setSelectMenuOpen(false);
+    setShapeMenuOpen(false);
+    setMoreMenuOpen(false);
+  }
+
   function activateExclusive(key: ExclusiveKey) {
     setToggles((prev) => {
       const next = { ...prev };
@@ -124,12 +130,7 @@ export function DesignToolbar() {
       }
       return next;
     });
-  }
-
-  function closeMenus() {
-    setSelectMenuOpen(false);
-    setShapeMenuOpen(false);
-    setMoreMenuOpen(false);
+    closeMenus();
   }
 
   function handleSelect(label: string) {

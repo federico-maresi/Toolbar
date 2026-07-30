@@ -356,7 +356,7 @@ export function DesignToolbar() {
       {moreMenuOpen && (
         <div
           role="menu"
-          className="absolute bottom-[calc(100%+8px)] right-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;

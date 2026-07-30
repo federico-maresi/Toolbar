@@ -213,7 +213,7 @@ export function DesignToolbar() {
               }`}
             >
               <ChevronDown
-                className={`h-4 w-4 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
+                className={`h-3 w-3 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
                 strokeWidth={2}
               />
             </button>
@@ -287,7 +287,7 @@ export function DesignToolbar() {
               }`}
             >
               <ChevronDown
-                className={`h-4 w-4 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
+                className={`h-3 w-3 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
                 strokeWidth={2}
               />
             </button>
@@ -351,7 +351,7 @@ export function DesignToolbar() {
             }`}
           >
             More
-            <ChevronDown className={`h-4 w-4 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
+            <ChevronDown className={`h-3 w-3 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
           </button>
 
           {moreMenuOpen && (

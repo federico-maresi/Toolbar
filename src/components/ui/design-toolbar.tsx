@@ -220,7 +220,7 @@ export function DesignToolbar() {
               }}
               className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
                 selectMenuOpen
-                  ? "bg-neutral-300 text-neutral-900"
+                  ? "bg-neutral-200 text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
               }`}
             >
@@ -249,7 +249,7 @@ export function DesignToolbar() {
                     onClick={() => handlePointerSelect(variant.label)}
                     className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors ${
                       selected
-                        ? "bg-neutral-300 text-neutral-900"
+                        ? "bg-neutral-200 text-neutral-900"
                         : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                     }`}
                   >
@@ -294,7 +294,7 @@ export function DesignToolbar() {
               }}
               className={`flex h-8 items-center rounded-lg pl-1 pr-2 transition-colors ${
                 shapeMenuOpen
-                  ? "bg-neutral-300 text-neutral-900"
+                  ? "bg-neutral-200 text-neutral-900"
                   : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
               }`}
             >
@@ -323,7 +323,7 @@ export function DesignToolbar() {
                     onClick={() => handleShapeSelect(variant.label)}
                     className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors ${
                       selected
-                        ? "bg-neutral-300 text-neutral-900"
+                        ? "bg-neutral-200 text-neutral-900"
                         : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                     }`}
                   >
@@ -384,7 +384,7 @@ export function DesignToolbar() {
                 onClick={() => handleSelect(item.label)}
                 className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition-colors ${
                   selected
-                    ? "bg-neutral-300 text-neutral-900"
+                    ? "bg-neutral-200 text-neutral-900"
                     : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                 }`}
               >

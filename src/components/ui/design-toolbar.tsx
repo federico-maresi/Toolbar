@@ -333,48 +333,50 @@ export function DesignToolbar() {
         />
         <div className="h-5 w-px bg-neutral-300 dark:bg-neutral-600" />
 
-        <button
-          type="button"
-          aria-haspopup="menu"
-          aria-expanded={moreMenuOpen}
-          onClick={() => {
-            setSelectMenuOpen(false);
-            setShapeMenuOpen(false);
-            setMoreMenuOpen((open) => !open);
-          }}
-          className={`flex h-8 items-center gap-1 rounded-full border pl-3 pr-2 text-sm font-medium text-white transition-colors dark:text-neutral-900 ${
-            moreMenuOpen
-              ? "border-transparent bg-neutral-900 dark:bg-white"
-              : "bg-neutral-900 bg-gradient-to-b from-neutral-800 to-neutral-900 hover:from-neutral-700 hover:to-neutral-800 border-t-black/90 border-x-black/55 border-b-black/55 dark:bg-white dark:from-white dark:to-neutral-50 dark:hover:from-neutral-50 dark:hover:to-neutral-100 dark:border-t-white/90 dark:border-x-white/55 dark:border-b-white/55"
-          }`}
-        >
-          More
-          <ChevronDown className={`h-4 w-4 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
-        </button>
-      </div>
+        <div className="relative">
+          <button
+            type="button"
+            aria-haspopup="menu"
+            aria-expanded={moreMenuOpen}
+            onClick={() => {
+              setSelectMenuOpen(false);
+              setShapeMenuOpen(false);
+              setMoreMenuOpen((open) => !open);
+            }}
+            className={`flex h-8 items-center gap-1 rounded-full border pl-3 pr-2 text-sm font-medium text-white transition-colors dark:text-neutral-900 ${
+              moreMenuOpen
+                ? "border-transparent bg-neutral-900 dark:bg-white"
+                : "bg-neutral-900 bg-gradient-to-b from-neutral-800 to-neutral-900 hover:from-neutral-700 hover:to-neutral-800 border-t-black/90 border-x-black/55 border-b-black/55 dark:bg-white dark:from-white dark:to-neutral-50 dark:hover:from-neutral-50 dark:hover:to-neutral-100 dark:border-t-white/90 dark:border-x-white/55 dark:border-b-white/55"
+            }`}
+          >
+            More
+            <ChevronDown className={`h-4 w-4 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
+          </button>
 
-      {moreMenuOpen && (
-        <div
-          role="menu"
-          className="absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-        >
-          {MORE_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.label}
-                type="button"
-                role="menuitem"
-                onClick={() => handleSelect(item.label)}
-                className="flex w-full items-center gap-2 rounded-full px-2 py-2 text-left text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 active:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:active:bg-neutral-200 dark:active:text-neutral-900"
-              >
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                <span className="text-sm font-medium">{item.label}</span>
-              </button>
-            );
-          })}
+          {moreMenuOpen && (
+            <div
+              role="menu"
+              className="absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              {MORE_ITEMS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => handleSelect(item.label)}
+                    className="flex w-full items-center gap-2 rounded-full px-2 py-2 text-left text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 active:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:active:bg-neutral-200 dark:active:text-neutral-900"
+                  >
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

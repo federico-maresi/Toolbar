@@ -1,16 +1,16 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig, mergeConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
+import baseConfig from "./vite.config";
 
-export default defineConfig({
-  plugins: [react(), viteSingleFile()],
-  resolve: {
-    alias: {
-      "@": new URL("./src", import.meta.url).pathname,
+// The dev-server app, emitted as one self-contained HTML file.
+// Everything else (React plugin, "@" alias) is inherited from vite.config.ts.
+export default mergeConfig(
+  baseConfig,
+  defineConfig({
+    plugins: [viteSingleFile()],
+    build: {
+      outDir: "standalone",
+      emptyOutDir: true,
     },
-  },
-  build: {
-    outDir: "standalone",
-    emptyOutDir: true,
-  },
-});
+  })
+);

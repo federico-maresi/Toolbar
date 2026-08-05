@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   MousePointer2,
   Hand,
@@ -18,33 +18,51 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-interface ToggleButtonProps {
-  icon: LucideIcon;
+interface ToolItem {
   label: string;
-  pressed: boolean;
-  onToggle: () => void;
+  icon: LucideIcon;
 }
 
-function ToggleButton({ icon: Icon, label, pressed, onToggle }: ToggleButtonProps) {
-  return (
-    <div className="group relative">
-      <button
-        type="button"
-        aria-label={label}
-        aria-pressed={pressed}
-        onClick={onToggle}
-        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-          pressed
-            ? "bg-[#9333ea] text-white"
-            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-        }`}
-      >
-        <Icon className="h-4 w-4" strokeWidth={2} />
-      </button>
-      <Tooltip label={label} />
-    </div>
-  );
-}
+const POINTER_VARIANTS: ToolItem[] = [
+  { label: "Move", icon: MousePointer2 },
+  { label: "Hand tool", icon: Hand },
+];
+
+const SHAPE_VARIANTS: ToolItem[] = [
+  { label: "Rectangle", icon: Square },
+  { label: "Ellipse", icon: Circle },
+  { label: "Triangle", icon: Triangle },
+  { label: "Polygon", icon: Hexagon },
+];
+
+const MORE_ITEMS: ToolItem[] = [
+  { label: "Media", icon: Image },
+  { label: "Assets", icon: Boxes },
+  { label: "Variables", icon: Variable },
+  { label: "Plugins", icon: Puzzle },
+];
+
+/** Toolbar tools. Exactly one is active at any time. */
+type ToolKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
+
+/** Toolbar dropdowns. At most one is open at any time. */
+type MenuKey = "select" | "shape" | "more";
+
+/** Brand accent for the active tool — the single source of truth for that colour. */
+const ACTIVE_TOOL_STYLE = "bg-[#9333ea] text-white";
+
+/** Neutral "on" state, used by open dropdown triggers and selected menu entries. */
+const ACTIVE_NEUTRAL_STYLE = "bg-neutral-200 text-neutral-900";
+
+const IDLE_STYLE =
+  "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white";
+
+const ICON_BUTTON_STYLE = "flex h-8 w-8 items-center justify-center rounded-full transition-colors";
+
+const MENU_ITEM_STYLE = "flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors";
+
+const MENU_PANEL_STYLE =
+  "absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 origin-bottom-left rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg transition-[opacity,transform] duration-150 dark:border-neutral-700 dark:bg-neutral-900";
 
 function Tooltip({ label }: { label: string }) {
   return (
@@ -58,112 +76,174 @@ function Tooltip({ label }: { label: string }) {
   );
 }
 
-interface MoreItem {
-  label: string;
-  icon: LucideIcon;
+function Chevron({ open }: { open: boolean }) {
+  return <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} strokeWidth={2} />;
 }
 
-const MORE_ITEMS: MoreItem[] = [
-  { label: "Media", icon: Image },
-  { label: "Assets", icon: Boxes },
-  { label: "Variables", icon: Variable },
-  { label: "Plugins", icon: Puzzle },
-];
-
-interface PointerVariant {
-  label: string;
-  icon: LucideIcon;
+/** Dropdown surface. Stays mounted and fades out, so it can animate on close. */
+function MenuPanel({ open, children }: { open: boolean; children: ReactNode }) {
+  return (
+    <div
+      role="menu"
+      className={`${MENU_PANEL_STYLE} ${open ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"}`}
+    >
+      {children}
+    </div>
+  );
 }
 
-const POINTER_VARIANTS: PointerVariant[] = [
-  { label: "Move", icon: MousePointer2 },
-  { label: "Hand tool", icon: Hand },
-];
-
-interface ShapeVariant {
-  label: string;
+interface ToggleButtonProps {
   icon: LucideIcon;
+  label: string;
+  pressed: boolean;
+  onToggle: () => void;
+  /** Suppressed while the tool's own dropdown is open, so it cannot cover the menu. */
+  tooltipVisible?: boolean;
 }
 
-const SHAPE_VARIANTS: ShapeVariant[] = [
-  { label: "Rectangle", icon: Square },
-  { label: "Ellipse", icon: Circle },
-  { label: "Triangle", icon: Triangle },
-  { label: "Polygon", icon: Hexagon },
-];
+function ToggleButton({ icon: Icon, label, pressed, onToggle, tooltipVisible = true }: ToggleButtonProps) {
+  return (
+    <div className="group relative">
+      <button
+        type="button"
+        aria-label={label}
+        aria-pressed={pressed}
+        onClick={onToggle}
+        className={`${ICON_BUTTON_STYLE} ${pressed ? ACTIVE_TOOL_STYLE : IDLE_STYLE}`}
+      >
+        <Icon className="h-4 w-4" strokeWidth={2} />
+      </button>
+      {tooltipVisible && <Tooltip label={label} />}
+    </div>
+  );
+}
 
-type ToggleKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
-type ExclusiveKey = "select" | "frame" | "shape" | "pen" | "text" | "comment";
+interface ToolWithVariantsProps {
+  /** Tooltip and accessible name of the main button. */
+  label: string;
+  pressed: boolean;
+  onActivate: () => void;
+  menuLabel: string;
+  menuTooltip: string;
+  menuOpen: boolean;
+  onToggleMenu: () => void;
+  variants: ToolItem[];
+  selectedVariant: string;
+  onSelectVariant: (label: string) => void;
+}
 
-const EXCLUSIVE_KEYS: ExclusiveKey[] = ["select", "frame", "shape", "pen", "text", "comment"];
+/** A tool button whose icon reflects the variant picked from its adjoining dropdown. */
+function ToolWithVariants({
+  label,
+  pressed,
+  onActivate,
+  menuLabel,
+  menuTooltip,
+  menuOpen,
+  onToggleMenu,
+  variants,
+  selectedVariant,
+  onSelectVariant,
+}: ToolWithVariantsProps) {
+  const activeVariant = variants.find((variant) => variant.label === selectedVariant) ?? variants[0];
+
+  return (
+    <div className="relative flex items-center gap-0">
+      <ToggleButton
+        icon={activeVariant.icon}
+        label={label}
+        pressed={pressed}
+        onToggle={onActivate}
+        tooltipVisible={!menuOpen}
+      />
+      <div className="relative">
+        <div className="group relative">
+          <button
+            type="button"
+            aria-label={menuLabel}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={onToggleMenu}
+            className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
+              menuOpen ? ACTIVE_NEUTRAL_STYLE : IDLE_STYLE
+            }`}
+          >
+            <Chevron open={menuOpen} />
+          </button>
+          {!menuOpen && <Tooltip label={menuTooltip} />}
+        </div>
+
+        <MenuPanel open={menuOpen}>
+          {variants.map((variant) => {
+            const Icon = variant.icon;
+            const selected = variant.label === selectedVariant;
+            return (
+              <button
+                key={variant.label}
+                type="button"
+                role="menuitem"
+                aria-pressed={selected}
+                onClick={() => onSelectVariant(variant.label)}
+                className={`${MENU_ITEM_STYLE} ${selected ? ACTIVE_NEUTRAL_STYLE : IDLE_STYLE}`}
+              >
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                <span className="text-sm font-medium">{variant.label}</span>
+              </button>
+            );
+          })}
+        </MenuPanel>
+      </div>
+    </div>
+  );
+}
 
 export function DesignToolbar() {
-  const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    select: true,
-    frame: false,
-    shape: false,
-    pen: false,
-    text: false,
-    comment: false,
-  });
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
-  const [selectMenuOpen, setSelectMenuOpen] = useState(false);
-  const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
+  const [activeTool, setActiveTool] = useState<ToolKey>("select");
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [selectedPointerTool, setSelectedPointerTool] = useState("Move");
   const [selectedShapeVariant, setSelectedShapeVariant] = useState("Rectangle");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const PointerIcon = POINTER_VARIANTS.find((variant) => variant.label === selectedPointerTool)?.icon ?? MousePointer2;
-  const ShapeIcon = SHAPE_VARIANTS.find((variant) => variant.label === selectedShapeVariant)?.icon ?? Square;
+  const moreMenuOpen = openMenu === "more";
 
-  function closeMenus() {
-    setSelectMenuOpen(false);
-    setShapeMenuOpen(false);
-    setMoreMenuOpen(false);
+  function activateTool(tool: ToolKey) {
+    setActiveTool(tool);
+    setOpenMenu(null);
   }
 
-  function activateExclusive(key: ExclusiveKey) {
-    setToggles((prev) => {
-      const next = { ...prev };
-      for (const exclusiveKey of EXCLUSIVE_KEYS) {
-        next[exclusiveKey] = exclusiveKey === key;
-      }
-      return next;
-    });
-    closeMenus();
-  }
-
-  function handleSelect(label: string) {
-    console.log(`Insert: ${label}`);
-    setMoreMenuOpen(false);
+  function toggleMenu(menu: MenuKey) {
+    setOpenMenu((current) => (current === menu ? null : menu));
   }
 
   function handlePointerSelect(label: string) {
     console.log(`Tool: ${label}`);
-    activateExclusive("select");
     setSelectedPointerTool(label);
-    setSelectMenuOpen(false);
+    activateTool("select");
   }
 
   function handleShapeSelect(label: string) {
     console.log(`Shape: ${label}`);
-    activateExclusive("shape");
     setSelectedShapeVariant(label);
-    setShapeMenuOpen(false);
+    activateTool("shape");
+  }
+
+  function handleMoreSelect(label: string) {
+    console.log(`Insert: ${label}`);
+    setOpenMenu(null);
   }
 
   useEffect(() => {
-    if (!moreMenuOpen && !shapeMenuOpen && !selectMenuOpen) return;
+    if (openMenu === null) return;
 
     function handlePointerDown(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        closeMenus();
+        setOpenMenu(null);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        closeMenus();
+        setOpenMenu(null);
       }
     }
 
@@ -173,168 +253,51 @@ export function DesignToolbar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [moreMenuOpen, shapeMenuOpen, selectMenuOpen]);
+  }, [openMenu]);
 
   return (
     <div ref={containerRef} className="relative inline-flex">
       <div className="flex items-center gap-2 rounded-3xl border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="relative flex items-center gap-0">
-          <div className="group relative">
-            <button
-              type="button"
-              aria-label={selectedPointerTool}
-              aria-pressed={toggles.select}
-              onClick={() => activateExclusive("select")}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-                toggles.select
-                  ? "bg-[#9333ea] text-white"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-              }`}
-            >
-              <PointerIcon className="h-4 w-4" strokeWidth={2} />
-            </button>
-            {!selectMenuOpen && <Tooltip label={selectedPointerTool} />}
-          </div>
-          <div className="relative">
-            <div className="group relative">
-              <button
-                type="button"
-                aria-label="Choose pointer tool"
-                aria-haspopup="menu"
-                aria-expanded={selectMenuOpen}
-                onClick={() => {
-                  setShapeMenuOpen(false);
-                  setMoreMenuOpen(false);
-                  setSelectMenuOpen((open) => !open);
-                }}
-                className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
-                  selectMenuOpen
-                    ? "bg-neutral-200 text-neutral-900"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                }`}
-              >
-                <ChevronDown
-                  className={`h-3 w-3 transition-transform ${selectMenuOpen ? "rotate-180" : ""}`}
-                  strokeWidth={2}
-                />
-              </button>
-              {!selectMenuOpen && <Tooltip label="Move tools" />}
-            </div>
+        <ToolWithVariants
+          label={selectedPointerTool}
+          pressed={activeTool === "select"}
+          onActivate={() => activateTool("select")}
+          menuLabel="Choose pointer tool"
+          menuTooltip="Move tools"
+          menuOpen={openMenu === "select"}
+          onToggleMenu={() => toggleMenu("select")}
+          variants={POINTER_VARIANTS}
+          selectedVariant={selectedPointerTool}
+          onSelectVariant={handlePointerSelect}
+        />
 
-            <div
-              role="menu"
-              className={`absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 origin-bottom-left rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg transition-[opacity,transform] duration-150 dark:border-neutral-700 dark:bg-neutral-900 ${
-                selectMenuOpen ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"
-              }`}
-            >
-              {POINTER_VARIANTS.map((variant) => {
-                const Icon = variant.icon;
-                const selected = selectedPointerTool === variant.label;
-                return (
-                  <button
-                    key={variant.label}
-                    type="button"
-                    role="menuitem"
-                    aria-pressed={selected}
-                    onClick={() => handlePointerSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
-                      selected
-                        ? "bg-neutral-200 text-neutral-900"
-                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                    <span className="text-sm font-medium">{variant.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <ToggleButton
+          icon={Frame}
+          label="Frame"
+          pressed={activeTool === "frame"}
+          onToggle={() => activateTool("frame")}
+        />
 
-        <ToggleButton icon={Frame} label="Frame" pressed={toggles.frame} onToggle={() => activateExclusive("frame")} />
+        <ToolWithVariants
+          label="Shape"
+          pressed={activeTool === "shape"}
+          onActivate={() => activateTool("shape")}
+          menuLabel="Choose shape"
+          menuTooltip="Shape tools"
+          menuOpen={openMenu === "shape"}
+          onToggleMenu={() => toggleMenu("shape")}
+          variants={SHAPE_VARIANTS}
+          selectedVariant={selectedShapeVariant}
+          onSelectVariant={handleShapeSelect}
+        />
 
-        <div className="relative flex items-center gap-0">
-          <div className="group relative">
-            <button
-              type="button"
-              aria-label="Shape"
-              aria-pressed={toggles.shape}
-              onClick={() => activateExclusive("shape")}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
-                toggles.shape
-                  ? "bg-[#9333ea] text-white"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-              }`}
-            >
-              <ShapeIcon className="h-4 w-4" strokeWidth={2} />
-            </button>
-            {!shapeMenuOpen && <Tooltip label="Shape" />}
-          </div>
-          <div className="relative">
-            <div className="group relative">
-              <button
-                type="button"
-                aria-label="Choose shape"
-                aria-haspopup="menu"
-                aria-expanded={shapeMenuOpen}
-                onClick={() => {
-                  setSelectMenuOpen(false);
-                  setMoreMenuOpen(false);
-                  setShapeMenuOpen((open) => !open);
-                }}
-                className={`flex h-8 items-center rounded-lg px-1 transition-colors ${
-                  shapeMenuOpen
-                    ? "bg-neutral-200 text-neutral-900"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                }`}
-              >
-                <ChevronDown
-                  className={`h-3 w-3 transition-transform ${shapeMenuOpen ? "rotate-180" : ""}`}
-                  strokeWidth={2}
-                />
-              </button>
-              {!shapeMenuOpen && <Tooltip label="Shape tools" />}
-            </div>
-
-            <div
-              role="menu"
-              className={`absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 origin-bottom-left rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg transition-[opacity,transform] duration-150 dark:border-neutral-700 dark:bg-neutral-900 ${
-                shapeMenuOpen ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"
-              }`}
-            >
-              {SHAPE_VARIANTS.map((variant) => {
-                const Icon = variant.icon;
-                const selected = selectedShapeVariant === variant.label;
-                return (
-                  <button
-                    key={variant.label}
-                    type="button"
-                    role="menuitem"
-                    aria-pressed={selected}
-                    onClick={() => handleShapeSelect(variant.label)}
-                    className={`flex w-full items-center gap-2 rounded-full px-2 py-2 text-left transition-colors ${
-                      selected
-                        ? "bg-neutral-200 text-neutral-900"
-                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                    <span className="text-sm font-medium">{variant.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <ToggleButton icon={PenTool} label="Pen" pressed={toggles.pen} onToggle={() => activateExclusive("pen")} />
-        <ToggleButton icon={Type} label="Text" pressed={toggles.text} onToggle={() => activateExclusive("text")} />
+        <ToggleButton icon={PenTool} label="Pen" pressed={activeTool === "pen"} onToggle={() => activateTool("pen")} />
+        <ToggleButton icon={Type} label="Text" pressed={activeTool === "text"} onToggle={() => activateTool("text")} />
         <ToggleButton
           icon={MessageSquare}
           label="Comment"
-          pressed={toggles.comment}
-          onToggle={() => activateExclusive("comment")}
+          pressed={activeTool === "comment"}
+          onToggle={() => activateTool("comment")}
         />
         <div className="h-5 w-px bg-neutral-300 dark:bg-neutral-600" />
 
@@ -343,11 +306,7 @@ export function DesignToolbar() {
             type="button"
             aria-haspopup="menu"
             aria-expanded={moreMenuOpen}
-            onClick={() => {
-              setSelectMenuOpen(false);
-              setShapeMenuOpen(false);
-              setMoreMenuOpen((open) => !open);
-            }}
+            onClick={() => toggleMenu("more")}
             className={`flex h-8 items-center gap-1 rounded-full border pl-3 pr-2 text-sm font-medium text-white transition-colors dark:text-neutral-900 ${
               moreMenuOpen
                 ? "border-transparent bg-neutral-900 dark:bg-white"
@@ -355,15 +314,10 @@ export function DesignToolbar() {
             }`}
           >
             More
-            <ChevronDown className={`h-3 w-3 transition-transform ${moreMenuOpen ? "rotate-180" : ""}`} strokeWidth={2} />
+            <Chevron open={moreMenuOpen} />
           </button>
 
-          <div
-            role="menu"
-            className={`absolute bottom-[calc(100%+8px)] left-0 z-10 w-36 origin-bottom-left rounded-[20px] border border-neutral-200 bg-white p-1 shadow-lg transition-[opacity,transform] duration-150 dark:border-neutral-700 dark:bg-neutral-900 ${
-              moreMenuOpen ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"
-            }`}
-          >
+          <MenuPanel open={moreMenuOpen}>
             {MORE_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
@@ -371,15 +325,15 @@ export function DesignToolbar() {
                   key={item.label}
                   type="button"
                   role="menuitem"
-                  onClick={() => handleSelect(item.label)}
-                  className="flex w-full items-center gap-2 rounded-full px-2 py-2 text-left text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 active:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:active:bg-neutral-200 dark:active:text-neutral-900"
+                  onClick={() => handleMoreSelect(item.label)}
+                  className={`${MENU_ITEM_STYLE} ${IDLE_STYLE} active:bg-neutral-200 active:text-neutral-900 dark:active:bg-neutral-200 dark:active:text-neutral-900`}
                 >
                   <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
                   <span className="text-sm font-medium">{item.label}</span>
                 </button>
               );
             })}
-          </div>
+          </MenuPanel>
         </div>
       </div>
     </div>

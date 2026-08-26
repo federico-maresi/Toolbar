@@ -68,6 +68,14 @@ npm run standalone:build  # single-file HTML preview
 npm run registry:build    # regenerate r/*.json from registry.json
 ```
 
-`r/design-toolbar.json` is generated — it inlines the component source, so run
-`npm run registry:build` and commit the result after editing the component,
-otherwise installs keep serving the old version.
+`r/design-toolbar.json` is generated — it inlines a *copy* of the component
+source, so a stale payload would be served to every consumer with nothing to
+signal it. A versioned pre-commit hook in `.githooks/` guards against that: any
+commit touching `src/` or `registry.json` rebuilds `r/` and folds the result
+into the commit.
+
+`npm install` wires the hook up via the `prepare` script. To do it by hand:
+
+```bash
+git config core.hooksPath .githooks
+```

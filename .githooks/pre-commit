@@ -1,0 +1,17 @@
+#!/bin/sh
+# Keeps r/*.json in sync with the sources it inlines.
+#
+# The registry payload embeds a *copy* of the component, so a commit that
+# changes the component without rebuilding would publish a stale file to every
+# consumer — silently, with no error anywhere to signal it.
+set -e
+
+# Nothing the registry inlines was touched, so there is nothing to rebuild.
+if ! git diff --cached --name-only | grep -qE '^(src/|registry\.json$)'; then
+  exit 0
+fi
+
+npm run --silent registry:build
+
+# Fold the regenerated payload into the commit being made.
+git add r/

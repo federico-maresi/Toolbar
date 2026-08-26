@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "standalone:build": "vite build --config vite.standalone.config.ts",
     "standalone:watch": "vite build --config vite.standalone.config.ts --watch",
-    "registry:build": "node scripts/build-registry.mjs"
+    "registry:build": "node scripts/build-registry.mjs",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "lucide-react": "^0.469.0",

@@ -58,6 +58,18 @@ import { DesignToolbar } from "@/components/ui/design-toolbar";
 - **The accent colour is hardcoded** as `bg-[#9333ea]` in `ACTIVE_TOOL_STYLE`.
   Point it at a theme token when adopting the component into a design system.
 
+## Repo layout
+
+| Path | Role |
+| --- | --- |
+| `src/components/ui/design-toolbar.tsx` | The component — the only file consumers ever receive |
+| `src/App.tsx`, `src/demos/` | Local demo harness, not published |
+| `registry.json` | Registry manifest: name, dependencies, install target |
+| `scripts/build-registry.mjs` | Inlines the source into the published payload |
+| `r/design-toolbar.json` | Generated payload that `shadcn add` downloads |
+| `.githooks/pre-commit` | Rebuilds `r/` so it cannot drift from `src/` |
+| `docs/superpowers/` | Design specs and implementation plans behind the component |
+
 ## Developing this repo
 
 ```bash
@@ -79,3 +91,14 @@ into the commit.
 ```bash
 git config core.hooksPath .githooks
 ```
+
+The hook stops at the commit: consumers install from `raw.githubusercontent.com`,
+so a change only reaches them once it is **pushed to `main`**.
+
+### A note on the lucide-react version
+
+`registry.json` declares `lucide-react` without a version range, so the shadcn
+CLI installs the current major (1.x) into consuming projects, while this repo
+still develops against `0.469`. All fifteen icons the component imports, plus the
+`LucideIcon` type, exist under both — but that is worth re-checking if the import
+list ever grows.

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "federico-maresi",
+  "homepage": "https://github.com/federico-maresi/Toolbar",
+  "items": [
+    {
+      "name": "design-toolbar",
+      "type": "registry:ui",
+      "title": "Design Toolbar",
+      "description": "Floating design-tool toolbar with pill buttons, dropdown variant menus for pointer and shape tools, hover tooltips and dark mode support.",
+      "author": "federico-maresi <https://github.com/federico-maresi>",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "src/components/ui/design-toolbar.tsx",
+          "type": "registry:ui",
+          "target": "@ui/design-toolbar.tsx"
+        }
+      ]
+    }
+  ]
+}

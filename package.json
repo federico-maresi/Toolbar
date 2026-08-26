@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "standalone:build": "vite build --config vite.standalone.config.ts",
-    "standalone:watch": "vite build --config vite.standalone.config.ts --watch"
+    "standalone:watch": "vite build --config vite.standalone.config.ts --watch",
+    "registry:build": "node scripts/build-registry.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.469.0",
